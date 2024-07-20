@@ -1,23 +1,14 @@
-import Link from 'next/link';
+import ItineraryForm from '@/components/Form';
+import dynamic, { LoaderComponent } from 'next/dynamic';
+import { ComponentType } from 'react';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen justify-center p-24">
-      <div className="flex items-center flex-col gap-10">
-        <div className="">Crie seu roteiro de viagem! </div>
-        <div>
-          Já pensou em ter um roteiro de viagem personalizado para você?
-        </div>
-
-        <div className="flex gap-10">
-          <div className="w-48  h-48 border-gray-400 border  rounded-lg flex items-center justify-center text-center cursor-pointer hover:bg-gray-100 transition-all ">
-            Já sei o lugar que pretendo visitar
-          </div>
-          <Link href="/continent-selection">
-            <div className="w-48  h-48 border-gray-400 border  rounded-lg flex items-center justify-center text-center cursor-pointer hover:bg-gray-100 transition-all ">
-              Ainda não sei o lugar que pretendo visitar
-            </div>
-          </Link>
+    <main className="flex min-h-screen justify-center items-center ">
+      <div className="xl:h-[50rem] h-[25rem] bg-red-300 rounded-xl  w-[80%] flex ">
+        <div className="h-full w-1/2 rounded-lg"></div>
+        <div className="flex border border-black items-center justify-center rounded-tr-lg rounded-br-lg h-full w-1/2">
+          <ItineraryForm />
         </div>
       </div>
     </main>
