@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./server:/app
+    command: flask run --host=0.0.0.0
+  
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./client:/app
+    command: npm run dev
