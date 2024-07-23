@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from 'antd';
 import { Button, Form, Input } from 'antd';
+import '../app/css/form.css';
 
 type FieldType = {
   travel_period: string;
