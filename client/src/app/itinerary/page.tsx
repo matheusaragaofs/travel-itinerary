@@ -8,10 +8,12 @@ import { Card, Tabs, TabsProps } from 'antd';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
-import React from 'react';
+import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { Description } from '@/utils/description';
+import { ExtraActivities } from '@/components/ExtraActivities';
 export default function Itinerary() {
+  const [map, setMap] = useState<L.Map | null>(null);
   const currentLocation = 'Recife, Pe';
   const getItinerary = async () => {
     const result = await axios.post(
@@ -36,10 +38,16 @@ export default function Itinerary() {
   //   queryKey: [`get-itinerary-${currentLocation}`],
   //   queryFn: () => getItinerary(),
   // });
+  const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
   const onChange = (key: string) => {
-    console.log(weekdays[Number(key)].key);
+    const dayOfWeek = weekdays[Number(key)].key;
+    setCurrentDayOfWeek(dayOfWeek);
   };
 
+  const formattedDates = JSON.parse(
+    mocked_response.travel_period.replace(/'/g, '"')
+  ).map((date: string) => format(parseISO(date), 'dd/MM/yy'));
+  const travelPeriod = `${formattedDates[0]} até ${formattedDates[1]}`;
   const weekdays = [
     {
       day: 'Segunda',
@@ -84,33 +92,67 @@ export default function Itinerary() {
       parseISO(weekday.itinerary.date_day),
       'dd/MM'
     )}`,
-    children: <DayItineraryCards data={weekday.itinerary} />,
+    children: <DayItineraryCards data={weekday.itinerary} map={map} />,
   }));
 
   return (
     <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12">
-      <Card className="w-full h-32">
-        <Description label="Destino" value={mocked_response.destination} />
-        <Description label="Orçamento" value={mocked_response.budget} />
+      <Card className="w-full ">
+        <Description
+          label="Destino"
+          value={mocked_response.destination}
+          labelFontsize="1.5rem"
+          valueFontsize="1.5rem"
+        />
+        <Description
+          label="Orçamento"
+          value={mocked_response.budget}
+          labelFontsize="1.2rem"
+          valueFontsize="1.2rem"
+        />
         <Description
           label="Período da viagem"
-          value={mocked_response.travel_period}
+          labelFontsize="1rem"
+          valueFontsize="1rem"
+          value={travelPeriod}
         />
         <Description
           label="Moeda local"
+          labelFontsize="1rem"
+          valueFontsize="1rem"
           value={mocked_response.local_currency}
+        />
+        <Description
+          label="Estilos de viagem preferidos"
+          labelFontsize="1rem"
+          valueFontsize="1rem"
+          value={mocked_response.preferred_travel_style.join(', ')}
         />
       </Card>
       <div className="flex w-full gap-5">
-        <div className="w-[40%]">
+        <div className="w-[40%] flex flex-col gap-3">
           <Card>
-            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
+            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
           </Card>
+
+          <ExtraActivities
+            map={map}
+            data={
+              mocked_response.extra_activities_based_on_preffered_travel_styles
+            }
+          />
         </div>
         <div className="w-full flex flex-col gap-5">
-          <div className="h-[25rem]">
+          <div className="h-[30rem]">
             <Map
-              itinerary={mocked_response.itinerary}
+              map={map}
+              setMap={setMap}
+              itinerary={Object.fromEntries(
+                Object.entries(mocked_response.itinerary).filter(
+                  ([day]) => day === currentDayOfWeek
+                )
+              )}
+              extraActivities={mocked_response.extra_activities_based_on_preffered_travel_styles}
               recommended_accomodations={
                 mocked_response.recommended_accommodations
               }
@@ -119,17 +161,15 @@ export default function Itinerary() {
           </div>
           <div className="flex gap-5">
             <Recommendations
+              map={map}
               title="Acomodações"
               data={mocked_response.recommended_accommodations}
             />
             <Recommendations
+              map={map}
               title="Restaurantes"
               data={mocked_response.recommended_restaurants}
             />
-            {/* <Recommendations
-              title="Atividades extras baseadas na preferência da viagem"
-              data={mocked_response.extra_activities_based_on_preffered_travel_styles}
-            /> */}
           </div>
         </div>
       </div>

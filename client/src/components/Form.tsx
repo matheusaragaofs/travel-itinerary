@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from 'antd';
 import { Button, Form, Input } from 'antd';
+import LocaleProvider from 'antd/es/locale';
 
 type FieldType = {
   travel_period: string;

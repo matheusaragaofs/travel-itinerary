@@ -1,35 +1,47 @@
 'use client';
-
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
-import { Fragment } from 'react';
-import { Itinerary, Recommendations } from '@/types';
+import { Fragment, useEffect, useRef } from 'react';
+import {
+  ExtraActivitiesBasedOnPrefferedTravelStyle,
+  Itinerary,
+  Recommendations,
+} from '@/types';
 import { Description } from '@/utils/description';
 
 interface Props {
-  itinerary: Itinerary;
+  itinerary: Partial<Itinerary>;
   recommended_accomodations: Recommendations[];
   recommended_restaurants: Recommendations[];
+  extraActivities: ExtraActivitiesBasedOnPrefferedTravelStyle[];
+  map: L.Map | null;
+  setMap: (map: L.Map) => void;
 }
 const Map = ({
   itinerary,
   recommended_accomodations,
   recommended_restaurants,
+  extraActivities,
+  setMap,
 }: Props) => {
-  const latLongByDays = Object.entries(itinerary).map(([day, activities]) => [
-    day,
-    ['morning', 'afternoon', 'night'].map((period) => ({
-      ...activities[period],
-      latLong: [
-        Number(activities[period].latitude),
-        Number(activities[period].longitude),
-      ],
-    })),
-  ]);
+  const mapRef = useRef<L.Map>(null);
 
+  const latLongByDays = Object.entries(itinerary).map(
+    ([day, activities]: [string, any]) => [
+      day,
+      ['morning', 'afternoon', 'night'].map((period: any) => ({
+        ...activities[period],
+        latLong: [
+          Number(activities[period].latitude),
+          Number(activities[period].longitude),
+        ],
+      })),
+    ]
+  );
+  console.log('latLongByDays:', latLongByDays);
   const AccomodationIcon = new L.Icon({
     iconUrl: `/markers/accomodation.svg`,
     iconRetinaUrl: `/markers/accomodation.svg`,
@@ -43,14 +55,22 @@ const Map = ({
     popupAnchor: [-0, -0],
     iconSize: [32, 40],
   });
+
+  const ActivityIcon = new L.Icon({
+    iconUrl: `/markers/location.svg`,
+    iconRetinaUrl: `/markers/location.svg`,
+    popupAnchor: [-0, -0],
+    iconSize: [32, 40],
+  });
+
   return (
     <MapContainer
-      key={new Date().getTime()}
-      center={{
-        lat: -8.05,
-        lng: -34.900002,
-      }}
-      zoom={14}
+      ref={mapRef}
+      // @ts-ignore
+      // key={new Date().getTime()}
+      whenReady={(map: any) => setMap(map.target)}
+      center={latLongByDays ? latLongByDays[0][1][0].latLong : [0, 0]}
+      zoom={13}
       style={{ height: '100%', width: '100%', borderRadius: 8 }}
     >
       <TileLayer
@@ -62,10 +82,13 @@ const Map = ({
           <Fragment key={`${day}-${i}`}>
             {(activities as any).map((activity: any, index: any) => {
               return (
-                <Marker key={`${day}-${index}`} position={activity.latLong}>
+                <Marker
+                  key={`${day}-${index}`}
+                  icon={ActivityIcon}
+                  position={activity.latLong}
+                >
                   <Popup>
-                    <Description label={'Nome'} value={activity.name} />
-                    <Description label={'Tipo'} value={activity.type} />
+                    <Description label={'Nome'} value={activity.activity} />
                     <Description
                       label={'Custo médio'}
                       value={activity.average_cost}
@@ -87,6 +110,19 @@ const Map = ({
           <Popup>
             <Description label={'Nome'} value={data.name} />
             <Description label={'Tipo'} value={data.type} />
+            <Description label={'Custo médio'} value={data.average_cost} />
+            <Description label={'Endereço'} value={data.address} />
+          </Popup>
+        </Marker>
+      ))}
+      {extraActivities.map((data, i) => (
+        <Marker
+          key={`${data.activity}-${i}`}
+          position={[parseFloat(data.latitude), parseFloat(data.longitude)]}
+        >
+          <Popup>
+            <Description label={'Nome'} value={data.activity} />
+            <Description label={'Horário'} value={data.time} />
             <Description label={'Custo médio'} value={data.average_cost} />
             <Description label={'Endereço'} value={data.address} />
           </Popup>
