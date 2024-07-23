@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic';
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import React from 'react';
 import { format, parseISO } from 'date-fns';
+import { Description } from '@/utils/description';
 export default function Itinerary() {
   const currentLocation = 'Recife, Pe';
   const getItinerary = async () => {
@@ -41,11 +42,6 @@ export default function Itinerary() {
 
   const weekdays = [
     {
-      day: 'Domingo',
-      itinerary: mocked_response.itinerary.sunday,
-      key: 'sunday',
-    },
-    {
       day: 'Segunda',
       itinerary: mocked_response.itinerary.monday,
       key: 'monday',
@@ -75,6 +71,11 @@ export default function Itinerary() {
       itinerary: mocked_response.itinerary.saturday,
       key: 'saturday',
     },
+    {
+      day: 'Domingo',
+      itinerary: mocked_response.itinerary.sunday,
+      key: 'sunday',
+    },
   ];
 
   const items: TabsProps['items'] = weekdays.map((weekday, index) => ({
@@ -87,7 +88,19 @@ export default function Itinerary() {
   }));
 
   return (
-    <main className="flex min-h-screen justify-center w-full p-12">
+    <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12">
+      <Card className="w-full h-32">
+        <Description label="Destino" value={mocked_response.destination} />
+        <Description label="Orçamento" value={mocked_response.budget} />
+        <Description
+          label="Período da viagem"
+          value={mocked_response.travel_period}
+        />
+        <Description
+          label="Moeda local"
+          value={mocked_response.local_currency}
+        />
+      </Card>
       <div className="flex w-full gap-5">
         <div className="w-[40%]">
           <Card>
@@ -113,6 +126,10 @@ export default function Itinerary() {
               title="Restaurantes"
               data={mocked_response.recommended_restaurants}
             />
+            {/* <Recommendations
+              title="Atividades extras baseadas na preferência da viagem"
+              data={mocked_response.extra_activities_based_on_preffered_travel_styles}
+            /> */}
           </div>
         </div>
       </div>
