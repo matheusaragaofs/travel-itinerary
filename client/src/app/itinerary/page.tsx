@@ -1,14 +1,15 @@
 'use client';
 
+import { Recommendations } from '@/components/Recommendations';
 import DayItineraryCards from '@/components/DayItineraryCards';
 import { mocked_response } from '@/mock_response';
 import { ItineraryResponse } from '@/types';
-import { useQuery } from '@tanstack/react-query';
-import { Avatar, Card, Flex, Switch, Tabs, TabsProps } from 'antd';
+import { Card, Tabs, TabsProps } from 'antd';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import React from 'react';
+import { format, parseISO } from 'date-fns';
 export default function Itinerary() {
   const currentLocation = 'Recife, Pe';
   const getItinerary = async () => {
@@ -35,61 +36,84 @@ export default function Itinerary() {
   //   queryFn: () => getItinerary(),
   // });
   const onChange = (key: string) => {
-    console.log(key);
+    console.log(weekdays[Number(key)].key);
   };
 
-  const items: TabsProps['items'] = [
+  const weekdays = [
     {
-      key: '0',
-      label: `Domingo ${mocked_response.itinerary.sunday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.sunday} />,
+      day: 'Domingo',
+      itinerary: mocked_response.itinerary.sunday,
+      key: 'sunday',
     },
     {
-      key: '1',
-      label: `Segunda ${mocked_response.itinerary.monday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.monday} />,
+      day: 'Segunda',
+      itinerary: mocked_response.itinerary.monday,
+      key: 'monday',
     },
     {
-      key: '2',
-      label: `Terça ${mocked_response.itinerary.tuesday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.tuesday} />,
+      day: 'Terça',
+      itinerary: mocked_response.itinerary.tuesday,
+      key: 'tuesday',
     },
     {
-      key: '3',
-      label: `Quarta ${mocked_response.itinerary.wednesday.date_day}`,
-      children: (
-        <DayItineraryCards data={mocked_response.itinerary.wednesday} />
-      ),
+      day: 'Quarta',
+      itinerary: mocked_response.itinerary.wednesday,
+      key: 'wednesday',
     },
     {
-      key: '4',
-      label: `Quinta ${mocked_response.itinerary.thursday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.thursday} />,
+      day: 'Quinta',
+      itinerary: mocked_response.itinerary.thursday,
+      key: 'thursday',
     },
     {
-      key: '5',
-      label: `Sexta ${mocked_response.itinerary.friday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.friday} />,
+      day: 'Sexta',
+      itinerary: mocked_response.itinerary.friday,
+      key: 'friday',
     },
     {
-      key: '6',
-      label: `Sábado ${mocked_response.itinerary.saturday.date_day}`,
-      children: <DayItineraryCards data={mocked_response.itinerary.saturday} />,
+      day: 'Sábado',
+      itinerary: mocked_response.itinerary.saturday,
+      key: 'saturday',
     },
   ];
 
-  const data = mocked_response;
+  const items: TabsProps['items'] = weekdays.map((weekday, index) => ({
+    key: index.toString(),
+    label: `${weekday.day} ${format(
+      parseISO(weekday.itinerary.date_day),
+      'dd/MM'
+    )}`,
+    children: <DayItineraryCards data={weekday.itinerary} />,
+  }));
+
   return (
-    <main className="flex min-h-screen justify-center p-24 w-full">
-      <div className="flex">
-        <div className="w-[30rem] border border-black">
-          <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
+    <main className="flex min-h-screen justify-center w-full p-12">
+      <div className="flex w-full gap-5">
+        <div className="w-[40%]">
+          <Card>
+            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />;
+          </Card>
         </div>
-        <div>
-          <div className="h-[30rem] w-[40rem]">
-            <Map />
+        <div className="w-full flex flex-col gap-5">
+          <div className="h-[25rem]">
+            <Map
+              itinerary={mocked_response.itinerary}
+              recommended_accomodations={
+                mocked_response.recommended_accommodations
+              }
+              recommended_restaurants={mocked_response.recommended_restaurants}
+            />
           </div>
-          <div>recomendações</div>
+          <div className="flex gap-5">
+            <Recommendations
+              title="Acomodações"
+              data={mocked_response.recommended_accommodations}
+            />
+            <Recommendations
+              title="Restaurantes"
+              data={mocked_response.recommended_restaurants}
+            />
+          </div>
         </div>
       </div>
     </main>

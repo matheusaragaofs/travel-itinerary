@@ -6,8 +6,8 @@ export interface ItineraryResponse {
   local_currency: string;
   local_currency_symbol: string;
   preferred_travel_style: string[];
-  recommended_accommodations: RecommendedAccommodation[];
-  recommended_restaurants: RecommendedRestaurant[];
+  recommended_accommodations: Recommendations[];
+  recommended_restaurants: Recommendations[];
   travel_period: string;
 }
 
@@ -46,16 +46,8 @@ export interface ItineraryActivity {
   time: string;
 }
 
-export interface RecommendedAccommodation {
-  address: string;
-  average_cost: string;
-  latitude: string;
-  longitude: string;
-  name: string;
-  type: string;
-}
 
-export interface RecommendedRestaurant {
+export interface Recommendations {
   address: string;
   average_cost: string;
   latitude: string;

@@ -1,4 +1,5 @@
 import { ItineraryActivity, ItineraryDay } from '@/types';
+import { Description } from '@/utils/description';
 import { Avatar, Card } from 'antd';
 
 type ActivityCardProps = {
@@ -16,19 +17,9 @@ export const ActivityCard = ({ data, type }: ActivityCardProps) => {
         title={currentData.activity}
         description={
           <>
-            <div className="flex gap-1 ">
-              <div className="font-bold">Horario:</div>
-              <div>{currentData.time}</div>
-            </div>
-
-            <div className="flex gap-1">
-              <div className="font-bold">Custo médio:</div>
-              <div>{currentData.average_cost}</div>
-            </div>
-            <div className="flex gap-1">
-              <div className="font-bold">Endereço:</div>
-              <div className="text-end">{currentData.address}</div>
-            </div>
+            <Description label="Horário" value={currentData.time} />
+            <Description label="Custo médio" value={currentData.average_cost} />
+            <Description label="Endereço" value={currentData.address} />
           </>
         }
       />
