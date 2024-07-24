@@ -10,8 +10,8 @@ import { mocked_response } from '@/mock_response';
 import { ItineraryResponse } from '@/types';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import React, { useState } from 'react';
-import { Card, Skeleton } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Skeleton } from 'antd';
 
 export default function Itinerary() {
   const [map, setMap] = useState<L.Map | null>(null);
@@ -47,6 +47,7 @@ export default function Itinerary() {
     setCurrentDayOfWeek(currrentDayOfWeek);
   };
   const loading = false;
+
   return (
     <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
       {loading ? (
@@ -125,17 +126,14 @@ export default function Itinerary() {
               <Map
                 map={map}
                 setMap={setMap}
+                currentDayOfWeek={currentDayOfWeek}
                 itinerary={Object.fromEntries(
                   Object.entries(mocked_response.itinerary).filter(
                     ([day]) => day === currentDayOfWeek
                   )
                 )}
-                recommended_accomodations={
-                  mocked_response.recommended_accommodations
-                }
-                recommended_restaurants={
-                  mocked_response.recommended_restaurants
-                }
+                accomodations={mocked_response.recommended_accommodations}
+                restaurants={mocked_response.recommended_restaurants}
               />
             </div>
           )}
