@@ -60,7 +60,8 @@ export function ItineraryDays({ data, onChange, map }: Props) {
   return (
     <Card>
       <Tabs
-        defaultActiveKey="1"
+        type="line"
+        defaultActiveKey="0"
         items={items}
         onChange={(key) => {
           onChange(weekdays[Number(key)].key);

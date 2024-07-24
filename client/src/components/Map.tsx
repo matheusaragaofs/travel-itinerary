@@ -15,6 +15,7 @@ import { Itinerary, Recommendations } from '@/types';
 import { Description } from '@/utils/description';
 import { useQuery } from '@tanstack/react-query';
 import { getDirections } from '@/utils/mapbox-directions';
+import { Card } from 'antd';
 
 interface Props {
   itinerary: Partial<Itinerary>;
@@ -52,25 +53,9 @@ const Map = ({
         .join(';')
     : '';
 
-  const accomodationsLatLongs = accomodations
-    .map((data) => `${data.longitude},${data.latitude}`)
-    .join(';');
-
-  const restaurantsLatLongs = restaurants
-    .map((data) => `${data.longitude},${data.latitude}`)
-    .join(';');
-
   const { data: itineraryCoordinates } = useQuery({
     queryKey: [`get-directions-${itinerary}-itinerary-${currentDayOfWeek}`],
     queryFn: () => getDirections({ latLongs: itineraryLatLongs }),
-  });
-  const { data: accomodationCoordinates } = useQuery({
-    queryKey: [`get-directions-${itinerary}-accomodations`],
-    queryFn: () => getDirections({ latLongs: accomodationsLatLongs }),
-  });
-  const { data: restaurantsCoordinates } = useQuery({
-    queryKey: [`get-directions-${itinerary}-restaurants`],
-    queryFn: () => getDirections({ latLongs: restaurantsLatLongs }),
   });
 
   const itineraryPolylines = itineraryCoordinates
@@ -79,16 +64,6 @@ const Map = ({
       )
     : null;
 
-  const accomodationsPolyline = accomodationCoordinates
-    ? accomodationCoordinates?.routes?.[0]?.geometry?.coordinates.map(
-        ([lat, long]: any) => [long, lat]
-      )
-    : null;
-  const restaurantsPolyline = restaurantsCoordinates
-    ? restaurantsCoordinates?.routes?.[0]?.geometry?.coordinates.map(
-        ([lat, long]: any) => [long, lat]
-      )
-    : null;
   const AccomodationIcon = new L.Icon({
     iconUrl: `/markers/accomodation.svg`,
     iconRetinaUrl: `/markers/accomodation.svg`,
@@ -110,18 +85,58 @@ const Map = ({
     iconSize: [32, 40],
   });
 
+  const itineraryInfo = {
+    distance: itineraryCoordinates?.routes?.[0]?.distance,
+    duration: itineraryCoordinates?.routes?.[0]?.duration,
+  };
+
+  const secondsToHms = (d: number) => {
+    d = Number(d);
+    const h = Math.floor(d / 3600);
+    const m = Math.floor((d % 3600) / 60);
+
+    return `${h}h ${m}m`;
+  };
+
+  const metersToKm = (d: number) => {
+    d = Number(d);
+
+    if (d < 999) {
+      return `${d} m`;
+    }
+
+    const km = Math.floor(d / 1000);
+    return `${km} km`;
+  };
+
   return (
     <MapContainer
       ref={mapRef}
       // @ts-ignore
       whenReady={(map: any) => setMap(map.target)}
-      key={`${JSON.stringify(accomodationsPolyline)} ${JSON.stringify(
-        itineraryCoordinates
-      )} ${JSON.stringify(restaurantsCoordinates)}`}
+      key={`${JSON.stringify(itineraryCoordinates)}`}
       center={latLongByDays ? latLongByDays[0][1][0].latLong : [0, 0]}
       zoom={13}
       style={{ height: '100%', width: '100%', borderRadius: 8 }}
     >
+      <Card
+        style={{
+          padding: 0,
+        }}
+        title="Informações do roteiro"
+        className="absolute top-10 right-10 z-[999] p-1 "
+      >
+        <div>
+          <Description
+            label="Distância"
+            value={metersToKm(itineraryInfo?.distance)}
+          />
+          <Description
+            label="Duração"
+            value={secondsToHms(itineraryInfo?.duration)}
+          />
+        </div>
+      </Card>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://worldtiles4.waze.com/tiles/{z}/{x}/{y}.png"
@@ -131,17 +146,6 @@ const Map = ({
         <Polyline positions={itineraryPolylines} color="#a11fec" weight={2} />
       )}
 
-      {restaurantsPolyline && (
-        <Polyline positions={restaurantsPolyline} color="#ee0047" weight={2} />
-      )}
-
-      {accomodationsPolyline && (
-        <Polyline
-          positions={accomodationsPolyline}
-          weight={2}
-          color="#7a380c"
-        />
-      )}
       {latLongByDays.map(([day, activities], i) => {
         return (
           <Fragment key={`${day}-${i}`}>

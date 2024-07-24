@@ -12,16 +12,16 @@ import axios from 'axios';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import { Skeleton } from 'antd';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Itinerary() {
   const [map, setMap] = useState<L.Map | null>(null);
 
-  const currentLocation = 'Recife, Pe';
   const getItinerary = async () => {
     const result = await axios.post(
       'http://127.0.0.1:5000/generate-itinerary',
       {
-        destination: 'Recife, Pernambuco',
+        destination: 'New York City',
         travel_period: "['2024-07-21', '2024-07-27']",
         preffered_travel_styles: {
           'Vida Noturna':
@@ -36,11 +36,11 @@ export default function Itinerary() {
     );
     return result.data as ItineraryResponse;
   };
-  // const { data, isFetching } = useQuery({
-  //   queryKey: [`get-itinerary-${currentLocation}`],
+  // const { data, isFetching: loading } = useQuery({
+  //   queryKey: [`get-itinerary`],
   //   queryFn: () => getItinerary(),
   // });
-
+  // console.log('data:', data);
   const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
 
   const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
