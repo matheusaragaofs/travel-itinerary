@@ -11,6 +11,7 @@ import { ItineraryResponse } from '@/types';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
+import { Card, Skeleton } from 'antd';
 
 export default function Itinerary() {
   const [map, setMap] = useState<L.Map | null>(null);
@@ -45,59 +46,122 @@ export default function Itinerary() {
   const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
     setCurrentDayOfWeek(currrentDayOfWeek);
   };
-
+  const loading = false;
   return (
     <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
-      <Header
-        travelStyles={mocked_response.preferred_travel_style}
-        destination={mocked_response.destination}
-        localCurrency={mocked_response.local_currency}
-        localCurrencySymbol={mocked_response.local_currency_symbol}
-        travelPeriod={mocked_response.travel_period}
-      />
+      {loading ? (
+        <Skeleton.Input
+          style={{
+            height: '10rem',
+            width: '100%',
+          }}
+          active
+        />
+      ) : (
+        <Header
+          travelStyles={mocked_response.preferred_travel_style}
+          destination={mocked_response.destination}
+          localCurrency={mocked_response.local_currency}
+          localCurrencySymbol={mocked_response.local_currency_symbol}
+          travelPeriod={mocked_response.travel_period}
+        />
+      )}
 
       <div className="flex w-full gap-5 h-full">
         <div className="w-[40%] flex flex-col gap-3">
-          <Budget
-            data={mocked_response.budget_for_all_days}
-            budget={mocked_response.budget}
-          />
-          <ItineraryDays
-            data={mocked_response.itinerary}
-            onChange={onChangeItineraryDaysTab}
-            map={map}
-          />
+          {loading ? (
+            <Skeleton.Input
+              style={{
+                height: '12rem',
+                width: '100%',
+              }}
+              active
+            />
+          ) : (
+            <Budget
+              data={mocked_response.budget_for_all_days}
+              budget={mocked_response.budget}
+            />
+          )}
 
-          <TravelTips data={mocked_response.types_and_observations} />
+          {loading ? (
+            <Skeleton.Input
+              style={{
+                height: '30rem',
+                width: '100%',
+              }}
+              active
+            />
+          ) : (
+            <ItineraryDays
+              data={mocked_response.itinerary}
+              onChange={onChangeItineraryDaysTab}
+              map={map}
+            />
+          )}
+          {loading ? (
+            <Skeleton.Input
+              style={{
+                height: '18rem',
+                width: '100%',
+              }}
+              active
+            />
+          ) : (
+            <TravelTips data={mocked_response.types_and_observations} />
+          )}
         </div>
-        <div className="w-full flex flex-col gap-5 h-full">
-          <div className="h-[30rem]">
-            <Map
-              map={map}
-              setMap={setMap}
-              itinerary={Object.fromEntries(
-                Object.entries(mocked_response.itinerary).filter(
-                  ([day]) => day === currentDayOfWeek
-                )
-              )}
-              recommended_accomodations={
-                mocked_response.recommended_accommodations
-              }
-              recommended_restaurants={mocked_response.recommended_restaurants}
+        <div className="w-full flex flex-col gap-5 ">
+          {loading ? (
+            <Skeleton.Input
+              style={{
+                height: '30rem',
+                width: '100%',
+              }}
+              active
             />
-          </div>
-          <div className="flex gap-5 h-full ">
-            <Recommendations
-              map={map}
-              title="Acomodações 🏨"
-              data={mocked_response.recommended_accommodations}
+          ) : (
+            <div className="h-[30rem]">
+              <Map
+                map={map}
+                setMap={setMap}
+                itinerary={Object.fromEntries(
+                  Object.entries(mocked_response.itinerary).filter(
+                    ([day]) => day === currentDayOfWeek
+                  )
+                )}
+                recommended_accomodations={
+                  mocked_response.recommended_accommodations
+                }
+                recommended_restaurants={
+                  mocked_response.recommended_restaurants
+                }
+              />
+            </div>
+          )}
+          {loading ? (
+            <Skeleton.Input
+              style={{
+                height: '30.3rem',
+                width: '100%',
+              }}
+              active
             />
-            <Recommendations
-              map={map}
-              title="Restaurantes 🍝"
-              data={mocked_response.recommended_restaurants}
-            />
-          </div>
+          ) : (
+            <div className="flex flex-row gap-5 ">
+              <Recommendations
+                map={map}
+                title="Acomodações 🏨"
+                data={mocked_response.recommended_accommodations}
+              />
+
+              <Recommendations
+                map={map}
+                title="Restaurantes 🍝"
+                data={mocked_response.recommended_restaurants}
+              />
+            </div>
+          )}
         </div>
       </div>
     </main>
