@@ -134,7 +134,11 @@
     border-color: #001b43 transparent !important;
     transform: translateY(200%) rotate(0deg) translateX(-50%)!important /* Tooltip arrow color */
   }
-  
+  .custom-slider-input{
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: medium;
+    border: 2px solid #000!important; 
+  }
   
   .centered-button .ant-btn {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -145,7 +149,14 @@
     font-size: 16px;
     border: none; 
     box-shadow: none; 
-    text-align: center; 
-    transition: background-color 0.3s ease; 
+    text-align: center;   
   }
+  
+  .centered-button .ant-btn:hover {
+    background-color: #01275f !important;
+    color: #ffffff;
+    border: none; 
+    box-shadow: none; 
+  }
+  
   

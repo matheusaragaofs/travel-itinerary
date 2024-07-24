@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
+
 import ItineraryForm from '@/components/Form';
 import './css/home.css'
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import dynamic, { LoaderComponent } from 'next/dynamic';
 import { ComponentType } from 'react';

@@ -5,15 +5,13 @@
   height: 100vh;
   margin: 0;
   padding: 0;
-  background: linear-gradient(#fff3e3, #fafafa); 
-  }
+  background: linear-gradient(#fff3e3, #fafafa);   
+}
 @media (max-width: 800px) {
  .Box-Foto {
   flex-direction: column;
 } 
 }
-
-
 
 .Box-Foto {
   position: absolute;

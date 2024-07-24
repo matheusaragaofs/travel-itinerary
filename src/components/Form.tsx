@@ -81,29 +81,30 @@ const ItineraryForm: React.FC = () => {
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
+        requiredMark={false}
       >
         <Form.Item<FieldType>
           label="Destino"
           name="destination"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[{ required: true, message: 'Por favor digite uma cidade!' }]}
           className="form-item"
         >
-          <Input placeholder="Rio de Janeiro,RJ..." className="custom-input" />
+          <Input placeholder="Rio de Janeiro,RJ..." className="custom-input" variant="borderless"/>
         </Form.Item>
 
         <Form.Item<FieldType>
           label="Período da viagem"
           name="travel_period"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: 'Por favor selecione uma data!' }]}
           className="form-item"
         >
-          <DatePicker placeholder="Selecione a data..."onChange={onChangeDate} picker="week" className="custom-input" />
+          <DatePicker placeholder="Selecione a data..." variant="borderless" format="DD-MM-YYYY"onChange={onChangeDate} picker="week" className="custom-input" />
         </Form.Item>
 
         <Form.Item<FieldType>
           label="Estilos de viagem preferidos"
           name="preffered_travel_styles"
-          rules={[{ required: true, message: 'Please input your password!' }]}
+          rules={[{ required: true, message: 'Por favor selecione no mínimo um estilo!' }]}
           className="form-item"
         >
           <Select
@@ -134,7 +135,7 @@ const ItineraryForm: React.FC = () => {
           className="form-item"
         >
           <Row>
-            <Col span={24}>
+            <Col span={20}>
               <Slider
                 min={1}
                 max={50}
@@ -146,11 +147,22 @@ const ItineraryForm: React.FC = () => {
                 className="custom-slider"
               />
             </Col>
+            <Col span={4}>
+            <InputNumber
+              min={1}
+              max={20}
+              style={{ margin: '0 16px' }}
+              value={sliderInputValue}
+              onChange={onChangeSlider}
+              variant="borderless"
+              className="custom-slider-input"
+            />
+          </Col>
           </Row>
         </Form.Item>
 
         <Form.Item className="form-item centered-button" wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" >
             Descubra o seu plano
           </Button>
         </Form.Item>
