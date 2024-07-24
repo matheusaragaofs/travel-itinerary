@@ -28,6 +28,7 @@ export const ActivityCard = ({ data, type, onClick }: ActivityCardProps) => {
         title={currentData.activity}
         description={
           <>
+            <p className='my-2'>{currentData.description}</p>
             <Description label="Horário" value={currentData.time} />
             <Description label="Custo médio" value={currentData.average_cost} />
             <Description label="Endereço" value={currentData.address} />

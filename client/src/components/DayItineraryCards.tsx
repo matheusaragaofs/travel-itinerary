@@ -1,7 +1,7 @@
 'use client';
 
 import { ItineraryDay } from '@/types';
-import { Flex } from 'antd';
+import { Flex, Timeline } from 'antd';
 import { ActivityCard } from './ActivityCard';
 import { LatLngExpression } from 'leaflet';
 
@@ -23,6 +23,37 @@ export default function DayItineraryCards({ data, map }: Props) {
         width: '100%',
       }}
     >
+      {/* <Timeline
+        mode={'left'}
+        items={[
+          {
+            label: '',
+            children: (
+              <ActivityCard
+                onClick={handleOnClick}
+                data={data}
+                type="morning"
+              />
+            ),
+          },
+          {
+            label: '',
+            children: (
+              <ActivityCard
+                onClick={handleOnClick}
+                data={data}
+                type="afternoon"
+              />
+            ),
+          },
+          {
+            children: (
+              <ActivityCard onClick={handleOnClick} data={data} type="night" />
+            ),
+          },
+         
+        ]}
+      /> */}
       <ActivityCard onClick={handleOnClick} data={data} type="morning" />
       <ActivityCard onClick={handleOnClick} data={data} type="afternoon" />
       <ActivityCard onClick={handleOnClick} data={data} type="night" />

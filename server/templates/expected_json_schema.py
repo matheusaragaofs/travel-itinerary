@@ -1,6 +1,7 @@
 activity_template = """
     {
         "activity": "string",
+        "description" :"string" 
         "address": "string",
         "latitude": "string",
         "longitude": "string",
@@ -12,6 +13,7 @@ activity_template = """
 recomendation_template = """
     {
         "name": "string",
+        "description" :"string"
         "address": "string",
         "latitude": "string",
         "longitude": "string",
@@ -28,6 +30,16 @@ day_template = f"""
         "afternoon": {activity_template},
         "night": {activity_template}
     }}
+"""
+
+budget_template = f"""
+{{
+    hosting_average_cost: "string",
+    food_average_cost: "string",
+    transportation_average_cost: "string",
+    activities_average_cost: "string",
+    total_average_cost: "string"
+}}
 """
 
 expected_json_schema = f"""
@@ -48,9 +60,10 @@ expected_json_schema = f"""
         "friday": {day_template},
         "saturday": {day_template},
     }},
+    "types_and_observations": [ string ]
     "recommended_accommodations": [ {recomendation_template} ],
     "recommended_restaurants": [ {recomendation_template} ],
-    "extra_activities_based_on_preffered_travel_styles": [ {activity_template} ]
+    "budget_for_all_days": {budget_template}
    
 }}
 """

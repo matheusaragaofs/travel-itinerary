@@ -1,6 +1,6 @@
 interface Props {
   label: string;
-  value: string;
+  value: string | React.ReactNode;
   textAlign?: 'center' | 'left' | 'right';
   labelFontsize?: string;
   valueFontsize?: string;

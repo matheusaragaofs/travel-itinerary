@@ -4,7 +4,17 @@ import { Recommendations } from '@/components/Recommendations';
 import DayItineraryCards from '@/components/DayItineraryCards';
 import { mocked_response } from '@/mock_response';
 import { ItineraryResponse } from '@/types';
-import { Card, Tabs, TabsProps } from 'antd';
+import {
+  Badge,
+  Card,
+  Descriptions,
+  DescriptionsProps,
+  List,
+  Tabs,
+  TabsProps,
+  Tag,
+  Typography,
+} from 'antd';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
@@ -44,10 +54,36 @@ export default function Itinerary() {
     setCurrentDayOfWeek(dayOfWeek);
   };
 
-  const formattedDates = JSON.parse(
-    mocked_response.travel_period.replace(/'/g, '"')
-  ).map((date: string) => format(parseISO(date), 'dd/MM/yy'));
-  const travelPeriod = `${formattedDates[0]} até ${formattedDates[1]}`;
+  const items2: DescriptionsProps['items'] = [
+    {
+      key: 'Atividades',
+      label: 'Atividades',
+      children: mocked_response.budget_for_all_days.activities_average_cost,
+    },
+    {
+      key: 'Alimentação',
+      label: 'Alimentação',
+      children: mocked_response.budget_for_all_days.food_average_cost,
+    },
+
+    {
+      key: 'Transporte',
+      label: 'Transporte',
+      children: mocked_response.budget_for_all_days.transportation_average_cost,
+    },
+    {
+      key: 'Hospedagem',
+      label: 'Hospedagem',
+      children: mocked_response.budget_for_all_days.hosting_average_cost,
+    },
+    {
+      key: '5',
+      label: 'Total',
+      span: 4,
+      children: mocked_response.budget_for_all_days.total_average_cost,
+    },
+  ];
+  const travelPeriod = mocked_response.travel_period;
   const weekdays = [
     {
       day: 'Segunda',
@@ -94,21 +130,19 @@ export default function Itinerary() {
     )}`,
     children: <DayItineraryCards data={weekday.itinerary} map={map} />,
   }));
-
+  const colors = [
+    'purple',
+    'magenta',
+    'blue'
+  ];
   return (
-    <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12">
-      <Card className="w-full ">
+    <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
+      <Card className="flex">
         <Description
           label="Destino"
-          value={mocked_response.destination}
-          labelFontsize="1.5rem"
-          valueFontsize="1.5rem"
-        />
-        <Description
-          label="Orçamento"
-          value={mocked_response.budget}
-          labelFontsize="1.2rem"
-          valueFontsize="1.2rem"
+          value={`${mocked_response.destination}`}
+          labelFontsize="1.3rem"
+          valueFontsize="1.3rem"
         />
         <Description
           label="Período da viagem"
@@ -126,23 +160,69 @@ export default function Itinerary() {
           label="Estilos de viagem preferidos"
           labelFontsize="1rem"
           valueFontsize="1rem"
-          value={mocked_response.preferred_travel_style.join(', ')}
+          value={mocked_response.preferred_travel_style
+            .split(',')
+            .map((style, index) => (
+              <Tag
+                bordered={false}
+                color={colors[index]}
+              >
+                {style}
+              </Tag>
+            ))}
+          // value={
+          //   <div>
+          //     <Tag bordered={false} color="cyan">
+          //       cyan
+          //     </Tag>
+          //     <Tag bordered={false} color="blue">
+          //       blue
+          //     </Tag>
+          //     <Tag bordered={false} color="geekblue">
+          //       geekblue
+          //     </Tag>
+          //     <Tag bordered={false} color="purple">
+          //       purple
+          //     </Tag>
+          //   </div>
+          // }
         />
       </Card>
-      <div className="flex w-full gap-5">
+      <div className="flex w-full gap-5 h-full">
         <div className="w-[40%] flex flex-col gap-3">
+          <Card className="w-fit">
+            <Descriptions
+              style={{}}
+              layout="vertical"
+              title={`Orçamento de ${mocked_response.budget} para toda a viagem`}
+              size="small"
+              items={items2}
+            />
+          </Card>
           <Card>
             <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
           </Card>
 
-          <ExtraActivities
-            map={map}
-            data={
-              mocked_response.extra_activities_based_on_preffered_travel_styles
-            }
-          />
+          <Card title="Dicas de viagem 💡">
+            <List
+              itemLayout="horizontal"
+              dataSource={mocked_response.types_and_observations}
+              renderItem={(item, index) => (
+                <List.Item className=" hover:bg-slate-200 transition-all duration-75 cursor-pointer rounded-lg ">
+                  <List.Item.Meta
+                    className="px-3 "
+                    title={
+                      <div className="text-neutral-700 ">
+                        • {'  '} {item}
+                      </div>
+                    }
+                  />
+                </List.Item>
+              )}
+            />
+          </Card>
         </div>
-        <div className="w-full flex flex-col gap-5">
+        <div className="w-full flex flex-col gap-5 h-full">
           <div className="h-[30rem]">
             <Map
               map={map}
@@ -152,22 +232,21 @@ export default function Itinerary() {
                   ([day]) => day === currentDayOfWeek
                 )
               )}
-              extraActivities={mocked_response.extra_activities_based_on_preffered_travel_styles}
               recommended_accomodations={
                 mocked_response.recommended_accommodations
               }
               recommended_restaurants={mocked_response.recommended_restaurants}
             />
           </div>
-          <div className="flex gap-5">
+          <div className="flex gap-5 h-full ">
             <Recommendations
               map={map}
-              title="Acomodações"
+              title="Acomodações 🏨"
               data={mocked_response.recommended_accommodations}
             />
             <Recommendations
               map={map}
-              title="Restaurantes"
+              title="Restaurantes 🍝"
               data={mocked_response.recommended_restaurants}
             />
           </div>

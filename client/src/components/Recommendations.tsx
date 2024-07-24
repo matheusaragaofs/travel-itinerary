@@ -36,6 +36,10 @@ export function Recommendations({ data, title, map }: Props) {
               }
               description={
                 <div>
+                  <p className='my-2'>
+
+                  {item.description}
+                  </p>
                   <Description label="Tipo" value={item.type} />
                   <Description label="Custo médio" value={item.average_cost} />
                   <Description

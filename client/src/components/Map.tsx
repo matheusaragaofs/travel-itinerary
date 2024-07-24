@@ -5,26 +5,21 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
 import { Fragment, useEffect, useRef } from 'react';
-import {
-  ExtraActivitiesBasedOnPrefferedTravelStyle,
-  Itinerary,
-  Recommendations,
-} from '@/types';
+import { Itinerary, Recommendations } from '@/types';
 import { Description } from '@/utils/description';
 
 interface Props {
   itinerary: Partial<Itinerary>;
   recommended_accomodations: Recommendations[];
   recommended_restaurants: Recommendations[];
-  extraActivities: ExtraActivitiesBasedOnPrefferedTravelStyle[];
   map: L.Map | null;
   setMap: (map: L.Map) => void;
 }
 const Map = ({
   itinerary,
+  map,
   recommended_accomodations,
   recommended_restaurants,
-  extraActivities,
   setMap,
 }: Props) => {
   const mapRef = useRef<L.Map>(null);
@@ -67,8 +62,8 @@ const Map = ({
     <MapContainer
       ref={mapRef}
       // @ts-ignore
-      // key={new Date().getTime()}
-      whenReady={(map: any) => setMap(map.target)}
+      // whenReady={(map: any) => setMap(map.target)}
+      key={new Date().getTime()}
       center={latLongByDays ? latLongByDays[0][1][0].latLong : [0, 0]}
       zoom={13}
       style={{ height: '100%', width: '100%', borderRadius: 8 }}
@@ -115,19 +110,7 @@ const Map = ({
           </Popup>
         </Marker>
       ))}
-      {extraActivities.map((data, i) => (
-        <Marker
-          key={`${data.activity}-${i}`}
-          position={[parseFloat(data.latitude), parseFloat(data.longitude)]}
-        >
-          <Popup>
-            <Description label={'Nome'} value={data.activity} />
-            <Description label={'Horário'} value={data.time} />
-            <Description label={'Custo médio'} value={data.average_cost} />
-            <Description label={'Endereço'} value={data.address} />
-          </Popup>
-        </Marker>
-      ))}
+
       {recommended_restaurants.map((data, i) => (
         <Marker
           key={`${data.name}-${i}`}
