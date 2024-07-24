@@ -16,6 +16,9 @@ import {
 } from 'antd';
 import { Button, Form, Input } from 'antd';
 import '../app/css/form.css';
+import dayjs, { Dayjs } from 'dayjs';
+
+
 
 type FieldType = {
   travel_period: string;
@@ -56,8 +59,10 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
   console.log('Failed:', errorInfo);
 };
 
-const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
-  console.log(date, dateString);
+const onChangeDate = (dates: [Dayjs | null, Dayjs | null] | null, dateStrings: [string, string]) => {
+  
+    console.log('Selected Dates: ', dates);
+    console.log('Formatted Date Strings: ', dateStrings);
 };
 
 const ItineraryForm: React.FC = () => {
@@ -70,6 +75,8 @@ const ItineraryForm: React.FC = () => {
   const handleChangePrefferedTravelStyle = (value: string) => {
     console.log(`selected ${value}`);
   };
+  const { RangePicker } = DatePicker;
+
 
   return (
     <div className="form-container">
@@ -98,7 +105,7 @@ const ItineraryForm: React.FC = () => {
           rules={[{ required: true, message: 'Por favor selecione uma data!' }]}
           className="form-item"
         >
-          <DatePicker placeholder="Selecione a data..." variant="borderless" format="DD-MM-YYYY"onChange={onChangeDate} picker="week" className="custom-input" />
+          <RangePicker variant="borderless" placeholder={['Data Início', 'Data FInal']} format="DD-MM-YYYY"  picker="week" className="custom-input" onChange={onChangeDate} />
         </Form.Item>
 
         <Form.Item<FieldType>
@@ -133,32 +140,18 @@ const ItineraryForm: React.FC = () => {
             { required: true, message: 'Por favor selecione seu orçamento!' },
           ]}
           className="form-item"
-        >
-          <Row>
-            <Col span={20}>
+        >                    
               <Slider
                 min={1}
-                max={50}
+                max={2000}
                 onChange={onChangeSlider}
                 value={
                   typeof sliderInputValue === 'number' ? sliderInputValue : 0
                 }
-                tooltip={{ open: true, formatter: (value) => `R$${value * 20},00` }} 
+                tooltip={{ open: true, formatter: (value) => `R$${value},00` }} 
                 className="custom-slider"
-              />
-            </Col>
-            <Col span={4}>
-            <InputNumber
-              min={1}
-              max={20}
-              style={{ margin: '0 16px' }}
-              value={sliderInputValue}
-              onChange={onChangeSlider}
-              variant="borderless"
-              className="custom-slider-input"
-            />
-          </Col>
-          </Row>
+              />         
+            
         </Form.Item>
 
         <Form.Item className="form-item centered-button" wrapperCol={{ offset: 8, span: 16 }}>
@@ -172,4 +165,3 @@ const ItineraryForm: React.FC = () => {
 };
 
 export default ItineraryForm;
-
