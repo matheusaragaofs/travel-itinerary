@@ -22,6 +22,7 @@ prompt_template = PromptTemplate(
 
         Based on the preffered travel styles: {preffered_travel_styles};
 
+        Make sure the answer is in brazilian portuguese;
         Make sure to include types and observations about the destination in the "types_and_observations", maybe about the weather, the culture, the people, etc;
         Make sure to include a brief description of the destination and the types of activities that can be done there in the itinerary days;
         Make sure there are 3 accommodation recommendations in: "recommended_accommodations" and a brief description about the accommodation;
@@ -31,7 +32,6 @@ prompt_template = PromptTemplate(
         Make sure to fill in all required fields with appropriate data.
         Make sure if the address has "R. " in it, it is replaced with "Rua " and if it has "Av. " in it, it is replaced with "Avenida ", and it doesnt need
         the zipcode in the address and the format should be "street_name, number, neighborhood, city - state".
-
     """
     ),
 )

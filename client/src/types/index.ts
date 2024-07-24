@@ -1,4 +1,5 @@
 export interface ItineraryResponse {
+  ISO_3166_A3_COUNTRY_CODE: string
   budget: string;
   destination: string;
   itinerary: Itinerary;

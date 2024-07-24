@@ -1,11 +1,17 @@
 import axios from 'axios';
 
-export const getSearchBox = async () => {
-  const address = 'Avenida Boa Viagem, Recife - PE';
-  const ISO_3166_country_code_A3 = 'BRA';
+interface Props {
+  address: string;
+  ISO3166_COUNTRY_CODE: string;
+}
+
+export const getSearchBox = async ({
+  address,
+  ISO3166_COUNTRY_CODE,
+}: Props) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPBOX_API_KEY;
   const response = await axios.get(
-    `https://api.mapbox.com/search/searchbox/v1/forward?q=${address}&language=pt&country=${ISO_3166_country_code_A3}&access_token=${apiKey}`
+    `https://api.mapbox.com/search/searchbox/v1/forward?q=${address}&language=pt&country=${ISO3166_COUNTRY_CODE}&access_token=${apiKey}`
   );
   return response.data;
 };

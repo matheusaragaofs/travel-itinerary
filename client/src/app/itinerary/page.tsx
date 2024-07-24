@@ -6,51 +6,65 @@ import { TravelTips } from '@/components/TravelTips';
 import { Budget } from '@/components/Budget';
 import { Header } from '@/components/Header';
 import { ItineraryDays } from '@/components/ItineraryDays';
-import { mocked_response } from '@/mock_response';
 import { ItineraryResponse } from '@/types';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
-import { Skeleton } from 'antd';
+import React, { useState } from 'react';
+import { Alert, Skeleton } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 
 export default function Itinerary() {
   const [map, setMap] = useState<L.Map | null>(null);
 
   const getItinerary = async () => {
-    const result = await axios.post(
-      'http://127.0.0.1:5000/generate-itinerary',
-      {
-        destination: 'New York City',
-        travel_period: "['2024-07-21', '2024-07-27']",
-        preffered_travel_styles: {
-          'Vida Noturna':
-            'Clubes, bares, música ao vivo e outras atividades noturnas.',
-          'Natureza e Vida Selvagem':
-            'Parques nacionais, safáris de vida selvagem, jardins botânicos.',
-          'Festival/Eventos':
-            'Participação em festivais locais, concertos, eventos esportivos ou outros grandes eventos.',
-        },
-        budget: 'R$ 2300',
-      }
-    );
-    return result.data as ItineraryResponse;
+    try {
+      const result = await axios.post(
+        'http://127.0.0.1:5000/generate-itinerary',
+        {
+          destination: 'New York City',
+          travel_period: "['2024-07-21', '2024-07-27']",
+          preffered_travel_styles: {
+            'Vida Noturna':
+              'Clubes, bares, música ao vivo e outras atividades noturnas.',
+            'Natureza e Vida Selvagem':
+              'Parques nacionais, safáris de vida selvagem, jardins botânicos.',
+            'Festival/Eventos':
+              'Participação em festivais locais, concertos, eventos esportivos ou outros grandes eventos.',
+          },
+          budget: 'R$ 2300',
+        }
+      );
+      return result.data as ItineraryResponse;
+    } catch (error) {
+      alert('Erro ao buscar itinerário');
+    }
   };
-  // const { data, isFetching: loading } = useQuery({
-  //   queryKey: [`get-itinerary`],
-  //   queryFn: () => getItinerary(),
-  // });
-  // console.log('data:', data);
+  const { data: itinerary, isFetching: loading } = useQuery({
+    queryKey: [`get-itinerary`],
+    queryFn: () => getItinerary(),
+  });
+
   const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
 
   const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
     setCurrentDayOfWeek(currrentDayOfWeek);
   };
-  const loading = false;
+  if (!loading && !itinerary) {
+    return (
+      <div className="m-12 flex items-center justify-center">
+        <Alert
+          message="Error"
+          description="Erro ao buscar itinerário"
+          type="error"
+          showIcon
+        />
+      </div>
+    );
+  }
 
   return (
     <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
-      {loading ? (
+      {loading || !itinerary ? (
         <Skeleton.Input
           style={{
             height: '10rem',
@@ -60,17 +74,17 @@ export default function Itinerary() {
         />
       ) : (
         <Header
-          travelStyles={mocked_response.preferred_travel_style}
-          destination={mocked_response.destination}
-          localCurrency={mocked_response.local_currency}
-          localCurrencySymbol={mocked_response.local_currency_symbol}
-          travelPeriod={mocked_response.travel_period}
+          travelStyles={itinerary.preferred_travel_style}
+          destination={itinerary.destination}
+          localCurrency={itinerary.local_currency}
+          localCurrencySymbol={itinerary.local_currency_symbol}
+          travelPeriod={itinerary.travel_period}
         />
       )}
 
       <div className="flex w-full gap-5 h-full">
         <div className="w-[40%] flex flex-col gap-3">
-          {loading ? (
+          {loading || !itinerary ? (
             <Skeleton.Input
               style={{
                 height: '12rem',
@@ -80,12 +94,12 @@ export default function Itinerary() {
             />
           ) : (
             <Budget
-              data={mocked_response.budget_for_all_days}
-              budget={mocked_response.budget}
+              data={itinerary.budget_for_all_days}
+              budget={itinerary.budget}
             />
           )}
 
-          {loading ? (
+          {loading || !itinerary ? (
             <Skeleton.Input
               style={{
                 height: '30rem',
@@ -95,12 +109,12 @@ export default function Itinerary() {
             />
           ) : (
             <ItineraryDays
-              data={mocked_response.itinerary}
+              data={itinerary.itinerary}
               onChange={onChangeItineraryDaysTab}
               map={map}
             />
           )}
-          {loading ? (
+          {loading || !itinerary ? (
             <Skeleton.Input
               style={{
                 height: '18rem',
@@ -109,11 +123,11 @@ export default function Itinerary() {
               active
             />
           ) : (
-            <TravelTips data={mocked_response.types_and_observations} />
+            <TravelTips data={itinerary.types_and_observations} />
           )}
         </div>
         <div className="w-full flex flex-col gap-5 ">
-          {loading ? (
+          {loading || !itinerary ? (
             <Skeleton.Input
               style={{
                 height: '30rem',
@@ -128,16 +142,16 @@ export default function Itinerary() {
                 setMap={setMap}
                 currentDayOfWeek={currentDayOfWeek}
                 itinerary={Object.fromEntries(
-                  Object.entries(mocked_response.itinerary).filter(
+                  Object.entries(itinerary.itinerary).filter(
                     ([day]) => day === currentDayOfWeek
                   )
                 )}
-                accomodations={mocked_response.recommended_accommodations}
-                restaurants={mocked_response.recommended_restaurants}
+                accomodations={itinerary.recommended_accommodations}
+                restaurants={itinerary.recommended_restaurants}
               />
             </div>
           )}
-          {loading ? (
+          {loading || !itinerary ? (
             <Skeleton.Input
               style={{
                 height: '30.3rem',
@@ -150,13 +164,13 @@ export default function Itinerary() {
               <Recommendations
                 map={map}
                 title="Acomodações 🏨"
-                data={mocked_response.recommended_accommodations}
+                data={itinerary.recommended_accommodations}
               />
 
               <Recommendations
                 map={map}
                 title="Restaurantes 🍝"
-                data={mocked_response.recommended_restaurants}
+                data={itinerary.recommended_restaurants}
               />
             </div>
           )}

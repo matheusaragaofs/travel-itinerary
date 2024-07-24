@@ -45,6 +45,7 @@ budget_template = f"""
 expected_json_schema = f"""
 {{
     "destination": "string",
+    ISO_3166_A3_COUNTRY_CODE: "string",
     "travel_period": "string",
     "preferred_travel_style": "string",
     "budget": "string", 
