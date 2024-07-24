@@ -36,7 +36,6 @@ const Map = ({
       })),
     ]
   );
-  console.log('latLongByDays:', latLongByDays);
   const AccomodationIcon = new L.Icon({
     iconUrl: `/markers/accomodation.svg`,
     iconRetinaUrl: `/markers/accomodation.svg`,
