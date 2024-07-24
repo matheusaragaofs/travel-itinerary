@@ -1,29 +1,20 @@
 'use client';
 
+const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import { Recommendations } from '@/components/Recommendations';
-import DayItineraryCards from '@/components/DayItineraryCards';
+import { TravelTips } from '@/components/TravelTips';
+import { Budget } from '@/components/Budget';
+import { Header } from '@/components/Header';
+import { ItineraryDays } from '@/components/ItineraryDays';
 import { mocked_response } from '@/mock_response';
 import { ItineraryResponse } from '@/types';
-import {
-  Badge,
-  Card,
-  Descriptions,
-  DescriptionsProps,
-  List,
-  Tabs,
-  TabsProps,
-  Tag,
-  Typography,
-} from 'antd';
 import axios from 'axios';
 import dynamic from 'next/dynamic';
-const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 import React, { useState } from 'react';
-import { format, parseISO } from 'date-fns';
-import { Description } from '@/utils/description';
-import { ExtraActivities } from '@/components/ExtraActivities';
+
 export default function Itinerary() {
   const [map, setMap] = useState<L.Map | null>(null);
+
   const currentLocation = 'Recife, Pe';
   const getItinerary = async () => {
     const result = await axios.post(
@@ -48,179 +39,36 @@ export default function Itinerary() {
   //   queryKey: [`get-itinerary-${currentLocation}`],
   //   queryFn: () => getItinerary(),
   // });
+
   const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
-  const onChange = (key: string) => {
-    const dayOfWeek = weekdays[Number(key)].key;
-    setCurrentDayOfWeek(dayOfWeek);
+
+  const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
+    setCurrentDayOfWeek(currrentDayOfWeek);
   };
 
-  const items2: DescriptionsProps['items'] = [
-    {
-      key: 'Atividades',
-      label: 'Atividades',
-      children: mocked_response.budget_for_all_days.activities_average_cost,
-    },
-    {
-      key: 'Alimentação',
-      label: 'Alimentação',
-      children: mocked_response.budget_for_all_days.food_average_cost,
-    },
-
-    {
-      key: 'Transporte',
-      label: 'Transporte',
-      children: mocked_response.budget_for_all_days.transportation_average_cost,
-    },
-    {
-      key: 'Hospedagem',
-      label: 'Hospedagem',
-      children: mocked_response.budget_for_all_days.hosting_average_cost,
-    },
-    {
-      key: '5',
-      label: 'Total',
-      span: 4,
-      children: mocked_response.budget_for_all_days.total_average_cost,
-    },
-  ];
-  const travelPeriod = mocked_response.travel_period;
-  const weekdays = [
-    {
-      day: 'Segunda',
-      itinerary: mocked_response.itinerary.monday,
-      key: 'monday',
-    },
-    {
-      day: 'Terça',
-      itinerary: mocked_response.itinerary.tuesday,
-      key: 'tuesday',
-    },
-    {
-      day: 'Quarta',
-      itinerary: mocked_response.itinerary.wednesday,
-      key: 'wednesday',
-    },
-    {
-      day: 'Quinta',
-      itinerary: mocked_response.itinerary.thursday,
-      key: 'thursday',
-    },
-    {
-      day: 'Sexta',
-      itinerary: mocked_response.itinerary.friday,
-      key: 'friday',
-    },
-    {
-      day: 'Sábado',
-      itinerary: mocked_response.itinerary.saturday,
-      key: 'saturday',
-    },
-    {
-      day: 'Domingo',
-      itinerary: mocked_response.itinerary.sunday,
-      key: 'sunday',
-    },
-  ];
-
-  const items: TabsProps['items'] = weekdays.map((weekday, index) => ({
-    key: index.toString(),
-    label: `${weekday.day} ${format(
-      parseISO(weekday.itinerary.date_day),
-      'dd/MM'
-    )}`,
-    children: <DayItineraryCards data={weekday.itinerary} map={map} />,
-  }));
-  const colors = [
-    'purple',
-    'magenta',
-    'blue'
-  ];
   return (
     <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
-      <Card className="flex">
-        <Description
-          label="Destino"
-          value={`${mocked_response.destination}`}
-          labelFontsize="1.3rem"
-          valueFontsize="1.3rem"
-        />
-        <Description
-          label="Período da viagem"
-          labelFontsize="1rem"
-          valueFontsize="1rem"
-          value={travelPeriod}
-        />
-        <Description
-          label="Moeda local"
-          labelFontsize="1rem"
-          valueFontsize="1rem"
-          value={mocked_response.local_currency}
-        />
-        <Description
-          label="Estilos de viagem preferidos"
-          labelFontsize="1rem"
-          valueFontsize="1rem"
-          value={mocked_response.preferred_travel_style
-            .split(',')
-            .map((style, index) => (
-              <Tag
-                bordered={false}
-                color={colors[index]}
-              >
-                {style}
-              </Tag>
-            ))}
-          // value={
-          //   <div>
-          //     <Tag bordered={false} color="cyan">
-          //       cyan
-          //     </Tag>
-          //     <Tag bordered={false} color="blue">
-          //       blue
-          //     </Tag>
-          //     <Tag bordered={false} color="geekblue">
-          //       geekblue
-          //     </Tag>
-          //     <Tag bordered={false} color="purple">
-          //       purple
-          //     </Tag>
-          //   </div>
-          // }
-        />
-      </Card>
+      <Header
+        travelStyles={mocked_response.preferred_travel_style}
+        destination={mocked_response.destination}
+        localCurrency={mocked_response.local_currency}
+        localCurrencySymbol={mocked_response.local_currency_symbol}
+        travelPeriod={mocked_response.travel_period}
+      />
+
       <div className="flex w-full gap-5 h-full">
         <div className="w-[40%] flex flex-col gap-3">
-          <Card className="w-fit">
-            <Descriptions
-              style={{}}
-              layout="vertical"
-              title={`Orçamento de ${mocked_response.budget} para toda a viagem`}
-              size="small"
-              items={items2}
-            />
-          </Card>
-          <Card>
-            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-          </Card>
+          <Budget
+            data={mocked_response.budget_for_all_days}
+            budget={mocked_response.budget}
+          />
+          <ItineraryDays
+            data={mocked_response.itinerary}
+            onChange={onChangeItineraryDaysTab}
+            map={map}
+          />
 
-          <Card title="Dicas de viagem 💡">
-            <List
-              itemLayout="horizontal"
-              dataSource={mocked_response.types_and_observations}
-              renderItem={(item, index) => (
-                <List.Item className=" hover:bg-slate-200 transition-all duration-75 cursor-pointer rounded-lg ">
-                  <List.Item.Meta
-                    className="px-3 "
-                    title={
-                      <div className="text-neutral-700 ">
-                        • {'  '} {item}
-                      </div>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
+          <TravelTips data={mocked_response.types_and_observations} />
         </div>
         <div className="w-full flex flex-col gap-5 h-full">
           <div className="h-[30rem]">

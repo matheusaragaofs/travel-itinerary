@@ -1,6 +1,6 @@
 import { ItineraryActivity, ItineraryDay } from '@/types';
 import { Description } from '@/utils/description';
-import { Avatar, Card } from 'antd';
+import { Avatar, Card, Tag } from 'antd';
 import { LatLngExpression } from 'leaflet';
 
 type ActivityCardProps = {
@@ -28,9 +28,21 @@ export const ActivityCard = ({ data, type, onClick }: ActivityCardProps) => {
         title={currentData.activity}
         description={
           <>
-            <p className='my-2'>{currentData.description}</p>
-            <Description label="Horário" value={currentData.time} />
-            <Description label="Custo médio" value={currentData.average_cost} />
+            <p className="my-2">{currentData.description}</p>
+            <Description
+              label="Horário"
+              value={<Tag bordered>{currentData.time}</Tag>}
+            />
+            <div className='my-2'>
+              <Description
+                label="Custo médio"
+                value={
+                  <Tag color="blue" bordered>
+                    {currentData.average_cost}
+                  </Tag>
+                }
+              />
+            </div>
             <Description label="Endereço" value={currentData.address} />
           </>
         }

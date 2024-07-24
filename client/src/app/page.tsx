@@ -1,7 +1,5 @@
 'use client';
 import ItineraryForm from '@/components/Form';
-import dynamic, { LoaderComponent } from 'next/dynamic';
-import { ComponentType } from 'react';
 import Itinerary from './itinerary/page';
 import { Provider } from '@/components/Provider';
 

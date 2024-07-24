@@ -1,6 +1,6 @@
 import { Recommendations as IRecommendations } from '@/types';
 import { Description } from '@/utils/description';
-import { Card, List } from 'antd';
+import { Card, List, Tag } from 'antd';
 import { LatLngExpression } from 'leaflet';
 
 interface Props {
@@ -36,12 +36,20 @@ export function Recommendations({ data, title, map }: Props) {
               }
               description={
                 <div>
-                  <p className='my-2'>
+                  <p className="my-2">{item.description}</p>
 
-                  {item.description}
-                  </p>
-                  <Description label="Tipo" value={item.type} />
-                  <Description label="Custo médio" value={item.average_cost} />
+                  <Description label="Tipo" value={<Tag> {item.type}</Tag>} />
+                  <div className="my-2">
+                    <Description
+                      label="Custo médio"
+                      value={
+                        <Tag color="blue" bordered>
+                          {item.average_cost}
+                        </Tag>
+                      }
+                    />
+                  </div>
+
                   <Description
                     textAlign="right"
                     label="Endereço"
