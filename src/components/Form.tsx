@@ -47,6 +47,7 @@ const travelStyleOptions = {
   'Festival/Eventos':
     'Participação em festivais locais, concertos, eventos esportivos ou outros grandes eventos.',
 };
+
 const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
   console.log('Success:', values);
 };
@@ -54,9 +55,11 @@ const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
   console.log('Failed:', errorInfo);
 };
+
 const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
   console.log(date, dateString);
 };
+
 const ItineraryForm: React.FC = () => {
   const [sliderInputValue, setSliderInputValue] = useState(1);
 
@@ -67,91 +70,94 @@ const ItineraryForm: React.FC = () => {
   const handleChangePrefferedTravelStyle = (value: string) => {
     console.log(`selected ${value}`);
   };
+
   return (
-    <Form
-      name="basic"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      style={{ maxWidth: 600 }}
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item<FieldType>
-        label="Destino"
-        name="destination"
-        rules={[{ required: true, message: 'Please input your username!' }]}
+    <div className="form-container">
+      <Form
+        name="basic"
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
       >
-        <Input />
-      </Form.Item>
+        <Form.Item<FieldType>
+          label="Destino"
+          name="destination"
+          rules={[{ required: true, message: 'Please input your username!' }]}
+          className="form-item"
+        >
+          <Input placeholder="Rio de Janeiro,RJ..." className="custom-input" />
+        </Form.Item>
 
-      <Form.Item<FieldType>
-        label="Período da viagem"
-        name="travel_period"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <DatePicker onChange={onChangeDate} picker="week" />
-      </Form.Item>
-      <Form.Item<FieldType>
-        label="Estilos de viagem preferidos"
-        name="preffered_travel_styles"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <Select
-          mode="multiple"
-          style={{ width: '100%' }}
-          maxCount={3}
-          placeholder="Tags Mode"
-          onChange={handleChangePrefferedTravelStyle}
-          options={Object.entries(travelStyleOptions).map(([label, value]) => ({
-            label,
-            value,
-          }))}
-          optionRender={(option) => (
-            <Tooltip placement="top" title={option.data.value}>
-              <Space>{option.label}</Space>
-            </Tooltip>
-          )}
-        />
-      </Form.Item>
-      <Form.Item<FieldType>
-        label="Orçamento"
-        name="budget"
-        rules={[
-          { required: true, message: 'Por favor selecione seu orçamento!' },
-        ]}
-      >
-        <Row>
-          <Col span={12}>
-            <Slider
-              min={1}
-              max={20}
-              onChange={onChangeSlider}
-              value={
-                typeof sliderInputValue === 'number' ? sliderInputValue : 0
-              }
-            />
-          </Col>
-          <Col span={8}>
-            <InputNumber
-              min={1}
-              max={20}
-              style={{ margin: '0 16px' }}
-              value={sliderInputValue}
-              onChange={onChangeSlider}
-            />
-          </Col>
-        </Row>
-      </Form.Item>
+        <Form.Item<FieldType>
+          label="Período da viagem"
+          name="travel_period"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+          className="form-item"
+        >
+          <DatePicker placeholder="Selecione a data..."onChange={onChangeDate} picker="week" className="custom-input" />
+        </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Criar roteiro
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item<FieldType>
+          label="Estilos de viagem preferidos"
+          name="preffered_travel_styles"
+          rules={[{ required: true, message: 'Please input your password!' }]}
+          className="form-item"
+        >
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            maxCount={3}
+            placeholder="Escolha seu tipo de viagem..."
+            onChange={handleChangePrefferedTravelStyle}
+            options={Object.entries(travelStyleOptions).map(([label, value]) => ({
+              label,
+              value,
+            }))}
+            optionRender={(option) => (
+              <Tooltip placement="top" title={option.data.value}>
+                <Space>{option.label}</Space>
+              </Tooltip>
+            )}
+            className="custom-input-dropdown"
+          />
+        </Form.Item>
+
+        <Form.Item<FieldType>
+          label="Orçamento"
+          name="budget"
+          rules={[
+            { required: true, message: 'Por favor selecione seu orçamento!' },
+          ]}
+          className="form-item"
+        >
+          <Row>
+            <Col span={24}>
+              <Slider
+                min={1}
+                max={50}
+                onChange={onChangeSlider}
+                value={
+                  typeof sliderInputValue === 'number' ? sliderInputValue : 0
+                }
+                tooltip={{ open: true, formatter: (value) => `R$${value * 20},00` }} 
+                className="custom-slider"
+              />
+            </Col>
+          </Row>
+        </Form.Item>
+
+        <Form.Item className="form-item centered-button" wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            Descubra o seu plano
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
 
 export default ItineraryForm;
+

@@ -6,7 +6,14 @@
   margin: 0;
   padding: 0;
   background: linear-gradient(#fff3e3, #fafafa); 
+  }
+@media (max-width: 800px) {
+ .Box-Foto {
+  flex-direction: column;
+} 
 }
+
+
 
 .Box-Foto {
   position: absolute;
@@ -14,23 +21,30 @@
   width: 90%;
   height: 90%;
   background: 
-    linear-gradient(#fff3e354, #fff3e30e), /* Overlay color */
-    url('../img/touristic-items-map.jpg'); /* Background image */
+    linear-gradient(#fff3e354, #fff3e30e),
+    url('../img/touristic-items-map.jpg');
   background-size: cover;
   background-position: center;
   border-radius: 20px;
-  z-index: 0;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 .form {
-    background: #faecda;
-    padding: 20px;
+    background: #fcefdd;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 100%;
-    max-height:500px;
-    height: 100%;
+    max-width: 800px;
+    width: 80%;
+    max-height:550px;
+    height: 80%;
     position: relative;
-    overflow: hidden;
+    padding: 50px;
   }
+.logo{
+  z-index: 1;
+  max-width: 500px;
+  width: 80%;
+}
+
