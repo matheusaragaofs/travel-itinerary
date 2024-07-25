@@ -19,7 +19,7 @@ export type FieldType = {
   travel_period: string;
   budget: string;
   destination: string;
-  preferred_travel_styles: string;
+  preferred_travel_styles: string[];
 };
 
 const travelStyleOptions = {

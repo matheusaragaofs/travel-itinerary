@@ -15,12 +15,13 @@ prompt_template = PromptTemplate(
         Please create a detailed travel itinerary with the following information:
 
         The destination of interest is: {destination};
-        The travel budget trip is: {budget};
+        The travel period is 7 days, here is the period: {travel_period};
+        The travel budget for the 7 days of the trip is: {budget};
         
         Generate a travel plan in the following JSON format: {expected_json_schema}
 
         Based on the preffered travel styles: {preffered_travel_styles};
-        Make the itinerary for the period of {travel_period};
+
         Make sure the answer is in brazilian portuguese;
         Make sure to include types and observations about the destination in the "types_and_observations", maybe about the weather, the culture, the people, etc;
         Make sure to include a brief description of the destination and the types of activities that can be done there in the itinerary days;

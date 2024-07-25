@@ -36,7 +36,7 @@ export default function Home() {
             googleMapsApiKey={'AIzaSyBtVM3Hv__-aJLFy76gC7A2AaQpYKG-1_U'}
             libraries={['places']}
           >
-            {itineraryInfo ? (
+            {!itineraryInfo ? (
               <div className="Body">
                 <div className="Box-Foto">
                   <div className="logo">

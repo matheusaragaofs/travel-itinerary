@@ -34,13 +34,13 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
     }
   };
 
-  // const { data: itinerary, isFetching: loading } = useQuery({
-  //   queryKey: [`get-itinerary`],
-  //   queryFn: () => getItinerary(),
-  // });
-
-  const loading = false;
-  const itinerary = mocked_response;
+  const { data: itinerary, isFetching: loading } = useQuery({
+    queryKey: [`get-itinerary`],
+    queryFn: () => getItinerary(),
+  });
+  
+  // const loading = false;
+  // const itinerary = mocked_response;
   const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState(
     mocked_response.itinerary[0].date_day
   );

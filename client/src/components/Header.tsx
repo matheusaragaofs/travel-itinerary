@@ -1,13 +1,14 @@
 import { ItineraryResponse } from '@/types';
 import { Description } from '@/utils/description';
 import { Card, Tag } from 'antd';
+import { formatDate } from 'date-fns';
 
 interface Props {
   destination?: string;
   travelPeriod?: string;
   localCurrency: string;
   localCurrencySymbol: string;
-  travelStyles?: string;
+  travelStyles?: string[];
   setItineraryInfo: (itineraryInfo: any) => void;
 }
 
@@ -39,7 +40,10 @@ export function Header({
         label="Período da viagem"
         labelFontsize="1rem"
         valueFontsize="1rem"
-        value={travelPeriod}
+        value={`${formatDate(
+          new Date(travelPeriod?.[0] ?? ''),
+          'dd/MM/yyyy'
+        )} até ${formatDate(new Date(travelPeriod?.[1] ?? ''), 'dd/MM/yyyy')}`}
       />
       <Description
         label="Moeda local"
@@ -55,7 +59,7 @@ export function Header({
         label="Estilos de viagem preferidos"
         labelFontsize="1rem"
         valueFontsize="1rem"
-        value={travelStyles?.split(',').map((style, index) => (
+        value={travelStyles?.map((style, index) => (
           <Tag color={colors[index]} key={index}>
             {style}
           </Tag>
