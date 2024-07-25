@@ -20,6 +20,7 @@ export type FieldType = {
   budget: string;
   destination: string;
   preferred_travel_styles: string[];
+  api_key: string;
 };
 
 const travelStyleOptions = {
@@ -177,7 +178,16 @@ const ItineraryForm: React.FC<Props> = ({ setItineraryInfo }) => {
             className="custom-input-dropdown"
           />
         </Form.Item>
-
+        <Form.Item<FieldType>
+          className="form-item"
+          label="Api Key"
+          name="api_key"
+          rules={[
+            { required: true, message: 'Por favor selecione a api key!' },
+          ]}
+        >
+          <Input className="custom-input" />
+        </Form.Item>
         <Form.Item<FieldType>
           label="Orçamento"
           name="budget"
