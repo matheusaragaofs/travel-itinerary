@@ -1,12 +1,15 @@
 'use client';
-import ItineraryForm from '@/components/Form';
+import ItineraryForm, { FieldType } from '@/components/Form';
+import { Card, Spin } from 'antd';
+import { useEffect, useState } from 'react';
+import '../app/css/form.css';
+import './css/home.css';
 import Itinerary from './itinerary/page';
 import { Provider } from '@/components/Provider';
-import { Spin } from 'antd';
-import { useEffect, useState } from 'react';
-
+import { LoadScript } from '@react-google-maps/api';
 export default function Home() {
   const [domLoaded, setDomLoaded] = useState(false);
+  const [itineraryInfo, setItineraryInfo] = useState<FieldType | null>(null);
 
   useEffect(() => {
     setDomLoaded(true);
@@ -20,15 +23,37 @@ export default function Home() {
     );
   return (
     <Provider>
-      <main className="flex min-h-screen justify-center items-center">
-        <div className="flex flex-col w-full">
-          <div className="xl:h-[50rem] h-[25rem] bg-red-300 rounded-xl  w-full flex ">
-            <div className="h-full w-1/2 rounded-lg"></div>
-            <div className="flex border border-black items-center justify-center rounded-tr-lg rounded-br-lg h-full w-1/2">
-              <ItineraryForm />
-            </div>
-          </div>
-          <Itinerary />
+      <main>
+        <div className="flex min-h-screen flex-col bg-gradient-to-r from-slate-900 to-slate-700">
+          <LoadScript
+            googleMapsApiKey={'AIzaSyBtVM3Hv__-aJLFy76gC7A2AaQpYKG-1_U'}
+            libraries={['places']}
+          >
+            {!itineraryInfo ? (
+              <div className="Body">
+                <div className="Box-Foto">
+                  <div className="logo">
+                    <img src="/img/logo.png" alt="Travel with AI Logo" />
+                  </div>
+
+                  <div className="form">
+                    <ItineraryForm setItineraryInfo={setItineraryInfo} />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex  justify-center items-center w-full">
+                <Card className="w-full m-12">
+                  {
+                    <Itinerary
+                      itineraryInfo={itineraryInfo}
+                      setItineraryInfo={setItineraryInfo}
+                    />
+                  }
+                </Card>
+              </div>
+            )}
+          </LoadScript>
         </div>
       </main>
     </Provider>

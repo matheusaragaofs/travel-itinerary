@@ -8,6 +8,7 @@ interface Props {
   localCurrency: string;
   localCurrencySymbol: string;
   travelStyles: string;
+  setItineraryInfo: (itineraryInfo: any) => void;
 }
 
 const colors = ['purple', 'magenta', 'blue'];
@@ -18,9 +19,16 @@ export function Header({
   localCurrency,
   localCurrencySymbol,
   travelStyles,
+  setItineraryInfo,
 }: Props) {
   return (
-    <Card className="flex">
+    <Card className="flex relative">
+      <div
+        onClick={() => setItineraryInfo(null)}
+        className="absolute top-5 right-5 cursor-pointer hover:bg-blue-800 transition bg-[#001b43] px-3 py-1 rounded-2xl  text-white"
+      >
+        Criar novo roteiro
+      </div>
       <Description
         label="Destino"
         value={`${destination}`}

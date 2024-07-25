@@ -17,13 +17,18 @@ def home():
     llm = get_model("openai")
 
     data = request.json
-    print("DATA", data)
     destination = data.get("destination")
-    print("DATA destination", destination)
     travel_period = data.get("travel_period")
     preffered_travel_styles = data.get("preffered_travel_styles")
     budget = data.get("budget")
 
+    print(
+        "POST generate-itinerary =>",
+        destination,
+        travel_period,
+        preffered_travel_styles,
+        budget,
+    )
     try:
         response = generate_itinerary(
             llm,

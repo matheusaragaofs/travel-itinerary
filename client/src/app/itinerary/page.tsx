@@ -12,40 +12,34 @@ import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
 import { Alert, Skeleton } from 'antd';
 import { useQuery } from '@tanstack/react-query';
+import { FieldType } from '@/components/Form';
+// import { mocked_response as itinerary } from '@/mock_response';
 
-export default function Itinerary() {
+interface Props {
+  itineraryInfo: FieldType | null;
+  setItineraryInfo: (itineraryInfo: any) => void;
+}
+export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
   const [map, setMap] = useState<L.Map | null>(null);
-
+  console.log('itineraryInfo in Itinerary page:', itineraryInfo);
   const getItinerary = async () => {
     try {
       const result = await axios.post(
         'http://127.0.0.1:5000/generate-itinerary',
-        {
-          destination: 'New York City',
-          travel_period: "['2024-07-21', '2024-07-27']",
-          preffered_travel_styles: {
-            'Vida Noturna':
-              'Clubes, bares, música ao vivo e outras atividades noturnas.',
-            'Natureza e Vida Selvagem':
-              'Parques nacionais, safáris de vida selvagem, jardins botânicos.',
-            'Festival/Eventos':
-              'Participação em festivais locais, concertos, eventos esportivos ou outros grandes eventos.',
-          },
-          budget: 'R$ 2300',
-        }
+        itineraryInfo
       );
       return result.data as ItineraryResponse;
     } catch (error) {
       alert('Erro ao buscar itinerário');
     }
   };
+
   const { data: itinerary, isFetching: loading } = useQuery({
     queryKey: [`get-itinerary`],
     queryFn: () => getItinerary(),
   });
 
   const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
-
   const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
     setCurrentDayOfWeek(currrentDayOfWeek);
   };
@@ -63,7 +57,7 @@ export default function Itinerary() {
   }
 
   return (
-    <main className="flex flex-col gap-3 min-h-screen justify-center w-full p-12 ">
+    <main className="flex flex-col gap-3 min-h-screen justify-center w-full ">
       {loading || !itinerary ? (
         <Skeleton.Input
           style={{
@@ -74,6 +68,7 @@ export default function Itinerary() {
         />
       ) : (
         <Header
+          setItineraryInfo={setItineraryInfo}
           travelStyles={itinerary.preferred_travel_style}
           destination={itinerary.destination}
           localCurrency={itinerary.local_currency}
