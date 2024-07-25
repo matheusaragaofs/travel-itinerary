@@ -1,24 +1,25 @@
 'use client';
 import {
   MapContainer,
-  Marker,
   Polyline,
   Popup,
   TileLayer,
+  Marker as LMarker,
 } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
 import { Fragment, useRef } from 'react';
-import { Itinerary, Recommendations } from '@/types';
+import { ItineraryDay, Recommendations } from '@/types';
 import { Description } from '@/utils/description';
 import { useQuery } from '@tanstack/react-query';
 import { getDirections } from '@/utils/mapbox-directions';
-import { Card } from 'antd';
+import { Card, Spin } from 'antd';
+import Marker from './Marker';
 
 interface Props {
-  itinerary: Partial<Itinerary>;
+  itinerary?: Partial<ItineraryDay>;
   currentDayOfWeek: string;
   accomodations: Recommendations[];
   restaurants: Recommendations[];
@@ -35,29 +36,32 @@ const Map = ({
 }: Props) => {
   const mapRef = useRef<L.Map>(null);
 
-  const latLongByDays = Object.entries(itinerary).map(
-    ([day, activities]: [string, any]) => [
-      day,
-      ['morning', 'afternoon', 'night'].map((period: any) => ({
-        ...activities[period],
-        latLong: [
-          Number(activities[period].latitude),
-          Number(activities[period].longitude),
-        ],
-      })),
-    ]
-  );
-  const itineraryLatLongs = Array.isArray(latLongByDays[0][1])
-    ? latLongByDays[0][1]
-        .map((data: any) => `${data.longitude},${data.latitude}`)
-        .join(';')
-    : '';
+  const morningLatLogs = itinerary?.morning?.map((activity) => ({
+    ...activity,
+    latLong: [Number(activity.latitude), Number(activity.longitude)],
+  }));
+  const afternoonLatLogs = itinerary?.afternoon?.map((activity) => ({
+    ...activity,
+    latLong: [Number(activity.latitude), Number(activity.longitude)],
+  }));
+  const nightLatLogs = itinerary?.night?.map((activity) => ({
+    ...activity,
+    latLong: [Number(activity.latitude), Number(activity.longitude)],
+  }));
+
+  const allItineraryLatLongs = [
+    ...(morningLatLogs || []),
+    ...(afternoonLatLogs || []),
+    ...(nightLatLogs || []),
+  ]
+    .map((d) => [d.longitude, d.latitude])
+    .map((d) => d.join(','))
+    .join(';');
 
   const { data: itineraryCoordinates } = useQuery({
     queryKey: [`get-directions-${itinerary}-itinerary-${currentDayOfWeek}`],
-    queryFn: () => getDirections({ latLongs: itineraryLatLongs }),
+    queryFn: () => getDirections({ latLongs: allItineraryLatLongs }),
   });
-
   const itineraryPolylines = itineraryCoordinates
     ? itineraryCoordinates?.routes?.[0]?.geometry?.coordinates.map(
         ([lat, long]: any) => [long, lat]
@@ -114,8 +118,12 @@ const Map = ({
       ref={mapRef}
       // @ts-ignore
       whenReady={(map: any) => setMap(map.target)}
-      key={`${JSON.stringify(itineraryCoordinates)}`}
-      center={latLongByDays ? latLongByDays[0][1][0].latLong : [0, 0]}
+      key={`${JSON.stringify(itinerary)}`}
+      center={
+        morningLatLogs
+          ? (morningLatLogs[0].latLong as any)
+          : [-23.5505, -46.6333]
+      }
       zoom={13}
       style={{ height: '100%', width: '100%', borderRadius: 8 }}
     >
@@ -126,16 +134,22 @@ const Map = ({
         title="Informações do roteiro"
         className="absolute top-10 right-10 z-[999] p-1 "
       >
-        <div>
-          <Description
-            label="Distância"
-            value={metersToKm(itineraryInfo?.distance)}
-          />
-          <Description
-            label="Duração"
-            value={secondsToHms(itineraryInfo?.duration)}
-          />
-        </div>
+        {!itineraryInfo.distance ? (
+          <div className="flex items-center justify-center">
+            <Spin />
+          </div>
+        ) : (
+          <div>
+            <Description
+              label="Distância"
+              value={metersToKm(itineraryInfo?.distance)}
+            />
+            <Description
+              label="Duração"
+              value={secondsToHms(itineraryInfo?.duration)}
+            />
+          </div>
+        )}
       </Card>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -146,32 +160,48 @@ const Map = ({
         <Polyline positions={itineraryPolylines} color="#a11fec" weight={2} />
       )}
 
-      {latLongByDays.map(([day, activities], i) => {
+      {morningLatLogs?.map((activity, index) => {
         return (
-          <Fragment key={`${day}-${i}`}>
-            {(activities as any).map((activity: any, index: any) => {
-              return (
-                <Marker
-                  key={`${day}-${index}`}
-                  icon={ActivityIcon}
-                  position={activity.latLong}
-                >
-                  <Popup>
-                    <Description label={'Nome'} value={activity.activity} />
-                    <Description
-                      label={'Custo médio'}
-                      value={activity.average_cost}
-                    />
-                    <Description label={'Endereço'} value={activity.address} />
-                  </Popup>
-                </Marker>
-              );
-            })}
+          <Fragment key={`${activity.address}-${index}`}>
+            <Marker
+              icon={ActivityIcon}
+              averageCost={activity.average_cost}
+              address={activity.address}
+              activity={activity.activity}
+              latLong={activity.latLong as any}
+            />
+          </Fragment>
+        );
+      })}
+      {afternoonLatLogs?.map((activity, index) => {
+        return (
+          <Fragment key={`${activity.address}-${index}`}>
+            <Marker
+              icon={ActivityIcon}
+              averageCost={activity.average_cost}
+              address={activity.address}
+              activity={activity.activity}
+              latLong={activity.latLong as any}
+            />
+          </Fragment>
+        );
+      })}
+
+      {nightLatLogs?.map((activity, index) => {
+        return (
+          <Fragment key={`${activity.address}-${index}`}>
+            <Marker
+              icon={ActivityIcon}
+              averageCost={activity.average_cost}
+              address={activity.address}
+              activity={activity.activity}
+              latLong={activity.latLong as any}
+            />
           </Fragment>
         );
       })}
       {accomodations.map((data, i) => (
-        <Marker
+        <LMarker
           key={`${data.name}-${i}`}
           icon={AccomodationIcon}
           position={[parseFloat(data.latitude), parseFloat(data.longitude)]}
@@ -182,11 +212,11 @@ const Map = ({
             <Description label={'Custo médio'} value={data.average_cost} />
             <Description label={'Endereço'} value={data.address} />
           </Popup>
-        </Marker>
+        </LMarker>
       ))}
 
       {restaurants.map((data, i) => (
-        <Marker
+        <LMarker
           key={`${data.name}-${i}`}
           icon={RestaurantIcon}
           position={[parseFloat(data.latitude), parseFloat(data.longitude)]}
@@ -197,7 +227,7 @@ const Map = ({
             <Description label={'Custo médio'} value={data.average_cost} />
             <Description label={'Endereço'} value={data.address} />
           </Popup>
-        </Marker>
+        </LMarker>
       ))}
     </MapContainer>
   );

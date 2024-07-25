@@ -4,46 +4,44 @@ import { Avatar, Card, Tag } from 'antd';
 import { LatLngExpression } from 'leaflet';
 
 type ActivityCardProps = {
-  data: ItineraryDay;
+  data: ItineraryActivity;
   type: 'morning' | 'afternoon' | 'night';
   onClick: (latLong: LatLngExpression) => void;
 };
 
 export const ActivityCard = ({ data, type, onClick }: ActivityCardProps) => {
-  const currentData = data[type] as ItineraryActivity;
-
   return (
     <Card
       loading={false}
       onClick={() =>
         onClick({
-          lat: Number(currentData.latitude),
-          lng: Number(currentData.longitude),
+          lat: Number(data.latitude),
+          lng: Number(data.longitude),
         })
       }
-      className="w-full hover:bg-slate-200 transition-all duration-75 cursor-pointer"
+      className="w-full hover:bg-slate-200 transition-all duration-75 cursor-pointer mb-3"
     >
       <Card.Meta
         avatar={<Avatar src={`${type}.svg`} />}
-        title={currentData.activity}
+        title={data.activity}
         description={
           <>
-            <p className="my-2">{currentData.description}</p>
+            <p className="my-2">{data.description}</p>
             <Description
               label="Horário"
-              value={<Tag bordered>{currentData.time}</Tag>}
+              value={<Tag bordered>{data.time}</Tag>}
             />
-            <div className='my-2'>
+            <div className="my-2">
               <Description
                 label="Custo médio"
                 value={
                   <Tag color="blue" bordered>
-                    {currentData.average_cost}
+                    {data.average_cost}
                   </Tag>
                 }
               />
             </div>
-            <Description label="Endereço" value={currentData.address} />
+            <Description label="Endereço" value={data.address} />
           </>
         }
       />

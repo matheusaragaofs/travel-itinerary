@@ -19,7 +19,7 @@ export type FieldType = {
   travel_period: string;
   budget: string;
   destination: string;
-  preffered_travel_styles: string;
+  preferred_travel_styles: string;
 };
 
 const travelStyleOptions = {
@@ -148,7 +148,7 @@ const ItineraryForm: React.FC<Props> = ({ setItineraryInfo }) => {
 
         <Form.Item<FieldType>
           label="Estilos de viagem preferidos"
-          name="preffered_travel_styles"
+          name="preferred_travel_styles"
           rules={[
             {
               required: true,

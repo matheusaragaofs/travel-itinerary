@@ -3,7 +3,7 @@ import { Card, Descriptions, DescriptionsProps } from 'antd';
 
 interface Props {
   data: BudgetForAllDays;
-  budget: string;
+  budget?: string;
 }
 export function Budget({ data, budget }: Props) {
   const budgetItems: DescriptionsProps['items'] = [

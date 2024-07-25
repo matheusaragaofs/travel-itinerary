@@ -7,6 +7,13 @@ import './css/home.css';
 import Itinerary from './itinerary/page';
 import { Provider } from '@/components/Provider';
 import { LoadScript } from '@react-google-maps/api';
+
+import { Plus_Jakarta_Sans } from 'next/font/google';
+
+const fontStyle = Plus_Jakarta_Sans({
+  weight: '300',
+  subsets: ['latin'],
+});
 export default function Home() {
   const [domLoaded, setDomLoaded] = useState(false);
   const [itineraryInfo, setItineraryInfo] = useState<FieldType | null>(null);
@@ -23,13 +30,13 @@ export default function Home() {
     );
   return (
     <Provider>
-      <main>
+      <main className={fontStyle.className}>
         <div className="flex min-h-screen flex-col bg-gradient-to-r from-slate-900 to-slate-700">
           <LoadScript
             googleMapsApiKey={'AIzaSyBtVM3Hv__-aJLFy76gC7A2AaQpYKG-1_U'}
             libraries={['places']}
           >
-            {!itineraryInfo ? (
+            {itineraryInfo ? (
               <div className="Body">
                 <div className="Box-Foto">
                   <div className="logo">

@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { Alert, Skeleton } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { FieldType } from '@/components/Form';
+import { mocked_response } from '@/mock_response';
 // import { mocked_response as itinerary } from '@/mock_response';
 
 interface Props {
@@ -21,7 +22,6 @@ interface Props {
 }
 export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
   const [map, setMap] = useState<L.Map | null>(null);
-  console.log('itineraryInfo in Itinerary page:', itineraryInfo);
   const getItinerary = async () => {
     try {
       const result = await axios.post(
@@ -34,15 +34,20 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
     }
   };
 
-  const { data: itinerary, isFetching: loading } = useQuery({
-    queryKey: [`get-itinerary`],
-    queryFn: () => getItinerary(),
-  });
+  // const { data: itinerary, isFetching: loading } = useQuery({
+  //   queryKey: [`get-itinerary`],
+  //   queryFn: () => getItinerary(),
+  // });
 
-  const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState('monday');
+  const loading = false;
+  const itinerary = mocked_response;
+  const [currentDayOfWeek, setCurrentDayOfWeek] = React.useState(
+    mocked_response.itinerary[0].date_day
+  );
   const onChangeItineraryDaysTab = (currrentDayOfWeek: string) => {
     setCurrentDayOfWeek(currrentDayOfWeek);
   };
+
   if (!loading && !itinerary) {
     return (
       <div className="m-12 flex items-center justify-center">
@@ -69,16 +74,16 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
       ) : (
         <Header
           setItineraryInfo={setItineraryInfo}
-          travelStyles={itinerary.preferred_travel_style}
-          destination={itinerary.destination}
+          travelStyles={itineraryInfo?.preferred_travel_styles}
+          destination={itineraryInfo?.destination}
           localCurrency={itinerary.local_currency}
           localCurrencySymbol={itinerary.local_currency_symbol}
-          travelPeriod={itinerary.travel_period}
+          travelPeriod={itineraryInfo?.travel_period}
         />
       )}
 
       <div className="flex w-full gap-5 h-full">
-        <div className="w-[40%] flex flex-col gap-3">
+        <div className="w-[45%] flex flex-col gap-3">
           {loading || !itinerary ? (
             <Skeleton.Input
               style={{
@@ -90,7 +95,7 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
           ) : (
             <Budget
               data={itinerary.budget_for_all_days}
-              budget={itinerary.budget}
+              budget={itineraryInfo?.budget}
             />
           )}
 
@@ -118,7 +123,7 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
               active
             />
           ) : (
-            <TravelTips data={itinerary.types_and_observations} />
+            <TravelTips data={itinerary.tips_and_observations} />
           )}
         </div>
         <div className="w-full flex flex-col gap-5 ">
@@ -136,10 +141,8 @@ export default function Itinerary({ itineraryInfo, setItineraryInfo }: Props) {
                 map={map}
                 setMap={setMap}
                 currentDayOfWeek={currentDayOfWeek}
-                itinerary={Object.fromEntries(
-                  Object.entries(itinerary.itinerary).filter(
-                    ([day]) => day === currentDayOfWeek
-                  )
+                itinerary={itinerary?.itinerary?.find(
+                  (day) => day.date_day === currentDayOfWeek
                 )}
                 accomodations={itinerary.recommended_accommodations}
                 restaurants={itinerary.recommended_restaurants}

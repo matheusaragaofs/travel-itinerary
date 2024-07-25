@@ -3,11 +3,11 @@ import { Description } from '@/utils/description';
 import { Card, Tag } from 'antd';
 
 interface Props {
-  destination: string;
-  travelPeriod: string;
+  destination?: string;
+  travelPeriod?: string;
   localCurrency: string;
   localCurrencySymbol: string;
-  travelStyles: string;
+  travelStyles?: string;
   setItineraryInfo: (itineraryInfo: any) => void;
 }
 
@@ -55,7 +55,7 @@ export function Header({
         label="Estilos de viagem preferidos"
         labelFontsize="1rem"
         valueFontsize="1rem"
-        value={travelStyles.split(',').map((style, index) => (
+        value={travelStyles?.split(',').map((style, index) => (
           <Tag color={colors[index]} key={index}>
             {style}
           </Tag>
